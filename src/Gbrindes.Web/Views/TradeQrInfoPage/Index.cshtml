@@ -1,0 +1,67 @@
+@{
+    ViewData["Title"] = "Consulta TRADE";
+    var code = ViewData["Code"]?.ToString() ?? string.Empty;
+}
+
+<section class="container py-4" id="trade-qr-info-page" data-code="@code" aria-labelledby="trade-qr-info-title">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <p class="text-uppercase text-secondary fw-semibold mb-2">TRADE</p>
+            <h1 id="trade-qr-info-title" class="h2">Consulta TRADE</h1>
+            <p class="text-secondary">Consulte somente a indústria, os produtos e o saldo disponível associados ao código.</p>
+
+            <div class="card card-body mb-4">
+                <h2 class="h5">Acesso</h2>
+                <form id="trade-qr-info-login-form" novalidate>
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label" for="trade-qr-info-email">E-mail</label>
+                            <input class="form-control" id="trade-qr-info-email" name="email" type="email" autocomplete="username" required />
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label" for="trade-qr-info-password">Senha</label>
+                            <input class="form-control" id="trade-qr-info-password" name="password" type="password" autocomplete="current-password" required />
+                        </div>
+                        <div class="col-md-2 d-grid">
+                            <button class="btn btn-primary" id="trade-qr-info-login" type="submit">Entrar</button>
+                        </div>
+                    </div>
+                </form>
+                <div id="trade-qr-info-session" class="mt-3 d-none">
+                    <span id="trade-qr-info-user-label"></span>
+                    <button class="btn btn-sm btn-outline-secondary ms-2" id="trade-qr-info-logout" type="button">Sair</button>
+                </div>
+            </div>
+
+            <form id="trade-qr-info-code-form" class="row g-2 align-items-end mb-3">
+                <div class="col-12 col-md-8">
+                    <label class="form-label" for="trade-qr-info-code">Código TRADE</label>
+                    <input class="form-control font-monospace" id="trade-qr-info-code" type="text" maxlength="40" value="@code" required />
+                </div>
+                <div class="col-12 col-md-4 d-grid">
+                    <button class="btn btn-outline-primary" id="trade-qr-info-lookup" type="submit" disabled>Consultar</button>
+                </div>
+            </form>
+
+            <p id="trade-qr-info-message" class="small text-secondary" role="status" aria-live="polite"></p>
+            <section id="trade-qr-info-results" class="card card-body d-none" aria-labelledby="trade-qr-info-results-title">
+                <h2 id="trade-qr-info-results-title" class="h4 font-monospace"></h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Indústria</dt>
+                    <dd id="trade-qr-info-industry" class="col-sm-9"></dd>
+                </dl>
+                <h3 class="h5 mt-4">Produtos e saldo disponível</h3>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead><tr><th scope="col">Produto</th><th scope="col">Código</th><th scope="col" class="text-end">Saldo</th></tr></thead>
+                        <tbody id="trade-qr-info-products"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/trade-qr-info.js" asp-append-version="true" defer></script>
+}

@@ -1,0 +1,29 @@
+# User-specific IDE files
+.vs/
+.idea/
+*.user
+*.suo
+
+# Build and package outputs
+**/bin/
+**/obj/
+artifacts/
+TestResults/
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+secrets.json
+appsettings.Development.json
+
+# Local databases and uploads
+*.db
+*.sqlite
+*.sqlite3
+storage/
+uploads/
+
+# OS metadata
+.DS_Store
+Thumbs.db

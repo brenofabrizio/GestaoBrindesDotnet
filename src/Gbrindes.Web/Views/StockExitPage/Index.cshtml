@@ -1,0 +1,103 @@
+@{
+    ViewData["Title"] = "Solicitar saída de estoque";
+}
+
+<section class="container py-4" id="stock-exit-page" aria-labelledby="stock-exit-title">
+    <p class="text-uppercase text-secondary fw-semibold mb-2">Estoque</p>
+    <h1 id="stock-exit-title" class="h2">Solicitar saída autorizada</h1>
+    <p class="text-secondary">Registra uma reserva; a quantidade fica reservada até a equipe CD/Estoque confirmar ou cancelar a ordem. Não baixa o saldo físico: a confirmação é feita em <a href="/stock/queue">Confirmar saídas</a>.</p>
+    <div class="alert alert-info" role="note">Este fluxo exige <code>stock.exit</code>. Perfis CD/Estoque não podem autorizar a própria saída; a API mantém essa separação e controla o saldo reservado.</div>
+
+    <div class="card card-body mb-4">
+        <h2 class="h5">Acesso</h2>
+        <form id="stock-exit-login-form" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label" for="stock-exit-email">E-mail</label>
+                    <input class="form-control" id="stock-exit-email" name="email" type="email" autocomplete="username" required />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="stock-exit-password">Senha</label>
+                    <input class="form-control" id="stock-exit-password" name="password" type="password" autocomplete="current-password" required />
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary" id="stock-exit-login" type="submit">Entrar</button>
+                </div>
+            </div>
+        </form>
+        <div id="stock-exit-session" class="mt-3 d-none">
+            <span id="stock-exit-user-label"></span>
+            <button class="btn btn-sm btn-outline-secondary ms-2" id="stock-exit-logout" type="button">Sair</button>
+        </div>
+    </div>
+
+    <p id="stock-exit-message" class="small" role="status" aria-live="polite"></p>
+    <div id="stock-exit-form-panel" class="card card-body d-none">
+        <form id="stock-exit-item-search" class="row g-2 align-items-end mb-3">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="stock-exit-item-query">Localizar brinde</label>
+                <input class="form-control" id="stock-exit-item-query" type="search" maxlength="100" placeholder="Código ou nome" />
+            </div>
+            <div class="col-sm-4 col-lg-3 d-grid">
+                <button class="btn btn-outline-primary" id="stock-exit-search-button" type="submit">Buscar brindes</button>
+            </div>
+        </form>
+        <form id="stock-exit-form" novalidate>
+            <fieldset id="stock-exit-fields">
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label" for="stock-exit-item">Brinde</label>
+                        <select class="form-select" id="stock-exit-item" name="item_id" required>
+                            <option value="">Selecione um brinde</option>
+                        </select>
+                        <div class="form-text" id="stock-exit-item-summary">O saldo disponível é agregado; a API valida a reserva antes de criar a ordem.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="stock-exit-quantity">Quantidade</label>
+                        <input class="form-control" id="stock-exit-quantity" name="quantity" type="number" min="1" max="1000000" step="1" value="1" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="stock-exit-purpose">Finalidade</label>
+                        <input class="form-control" id="stock-exit-purpose" name="purpose" maxlength="255" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="stock-exit-recipient">Destinatário</label>
+                        <input class="form-control" id="stock-exit-recipient" name="recipient" maxlength="150" />
+                    </div>
+                    <div class="col-md-6 d-none" id="stock-exit-industry-field">
+                        <label class="form-label" for="stock-exit-industry">Indústria (opcional)</label>
+                        <select class="form-select" id="stock-exit-industry" name="industry_id">
+                            <option value="">Não informado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 d-none" id="stock-exit-department-field">
+                        <label class="form-label" for="stock-exit-department">Departamento (opcional)</label>
+                        <select class="form-select" id="stock-exit-department" name="department_id">
+                            <option value="">Não informado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="stock-exit-document">NF / documento</label>
+                        <input class="form-control" id="stock-exit-document" name="document_ref" maxlength="60" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="stock-exit-attachment">Anexar NF (opcional)</label>
+                        <input class="form-control" id="stock-exit-attachment" name="attachment" type="file" accept="application/pdf,image/jpeg,image/png" />
+                        <div class="form-text">PDF, JPG ou PNG válido; máximo de 10 MB. O arquivo fica privado e só pode ser baixado por quem tem acesso à fila de saídas.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="stock-exit-notes">Observações</label>
+                        <textarea class="form-control" id="stock-exit-notes" name="notes" rows="2" maxlength="1000"></textarea>
+                    </div>
+                </div>
+                <p class="small text-secondary mt-3 mb-0">A confirmação do formulário reserva o saldo disponível; a baixa só ocorre após confirmação CD. Reenvios do mesmo payload e anexo reutilizam a chave Idempotency-Key. A baixa é registrada no livro de estoque quando o CD confirma.</p>
+                <button class="btn btn-primary mt-3" id="stock-exit-submit" type="submit">Solicitar saída</button>
+            </fieldset>
+        </form>
+        <div id="stock-exit-result" class="alert alert-success mt-3 d-none" role="status" aria-live="polite"></div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/stock-exit.js" asp-append-version="true" defer></script>
+}

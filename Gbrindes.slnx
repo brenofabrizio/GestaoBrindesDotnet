@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Gbrindes.Web/Gbrindes.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Gbrindes.Tests/Gbrindes.Tests.csproj" />
+  </Folder>
+</Solution>

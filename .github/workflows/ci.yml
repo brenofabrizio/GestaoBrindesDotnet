@@ -1,0 +1,55 @@
+name: .NET CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: gbrindes_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d gbrindes_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      ConnectionStrings__DefaultConnection: Host=127.0.0.1;Port=5432;Database=gbrindes_ci;Username=postgres;Password=postgres;Timeout=5;Command Timeout=30
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Restore local tools and packages
+        run: |
+          dotnet tool restore
+          dotnet restore Gbrindes.slnx
+      - name: Run standard test suite
+        env:
+          ConnectionStrings__DefaultConnection: ''
+          GBRINDES_RUN_POSTGRES_TESTS: ''
+        run: dotnet test Gbrindes.slnx --no-restore --configuration Release
+      - name: Apply PostgreSQL migrations
+        run: dotnet ef database update --project src/Gbrindes.Web --startup-project src/Gbrindes.Web
+      - name: Run PostgreSQL integration tests
+        env:
+          GBRINDES_RUN_POSTGRES_TESTS: '1'
+        run: dotnet test tests/Gbrindes.Tests/Gbrindes.Tests.csproj --no-restore --configuration Release --filter 'FullyQualifiedName~PostgreSql'
+      - name: Verify formatting
+        run: dotnet format Gbrindes.slnx --verify-no-changes --no-restore

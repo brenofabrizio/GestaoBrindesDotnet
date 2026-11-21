@@ -1,0 +1,160 @@
+@{
+    ViewData["Title"] = "Solicitações internas";
+    var requestId = ViewData["RequestId"]?.ToString() ?? string.Empty;
+}
+
+<section class="container py-4" id="requests-page" data-request-id="@requestId" aria-labelledby="requests-title">
+    <div class="d-flex flex-wrap align-items-start gap-3 mb-4">
+        <div>
+            <p class="text-uppercase text-secondary fw-semibold mb-2">Operação</p>
+            <h1 id="requests-title" class="h2">Solicitações internas</h1>
+            <p class="text-secondary mb-0">Consulte o andamento e execute somente as transições liberadas pela API para sua conta.</p>
+        </div>
+    </div>
+
+    <div class="card card-body mb-4">
+        <h2 class="h5">Acesso</h2>
+        <form id="requests-login-form" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label" for="requests-email">E-mail</label>
+                    <input class="form-control" id="requests-email" type="email" autocomplete="username" required />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="requests-password">Senha</label>
+                    <input class="form-control" id="requests-password" type="password" autocomplete="current-password" required />
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary" id="requests-login" type="submit">Entrar</button>
+                </div>
+            </div>
+        </form>
+        <div id="requests-session" class="mt-3 d-none">
+            <span id="requests-user-label"></span>
+            <button class="btn btn-sm btn-outline-secondary ms-2" id="requests-logout" type="button">Sair</button>
+        </div>
+    </div>
+
+    <p id="requests-message" class="small" role="status" aria-live="polite"></p>
+    <div id="requests-error" class="alert alert-danger d-none" role="alert">
+        <span id="requests-error-text"></span>
+        <button id="requests-retry" class="btn btn-sm btn-outline-danger ms-2" type="button">Tentar novamente</button>
+    </div>
+
+    <section id="requests-list-panel" class="d-none" aria-labelledby="requests-list-title">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <h2 id="requests-list-title" class="h4 mb-0 me-auto">Lista de solicitações</h2>
+            <a id="requests-new" class="btn btn-primary d-none" href="/requests/new">Nova solicitação</a>
+            <button class="btn btn-outline-secondary" id="requests-refresh" type="button">Atualizar</button>
+        </div>
+        <div class="row g-2 align-items-end mb-3">
+            <div class="col-md-4">
+                <label class="form-label" for="requests-search">Buscar</label>
+                <input class="form-control" id="requests-search" type="search" maxlength="100" placeholder="Código, finalidade ou solicitante" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="requests-status">Status</label>
+                <select class="form-select" id="requests-status">
+                    <option value="">Todos</option>
+                    <option value="aguardando_aprovacao">Aguardando aprovação</option>
+                    <option value="aprovada">Aprovada</option>
+                    <option value="em_separacao">Em separação</option>
+                    <option value="pronta">Pronta</option>
+                    <option value="finalizada">Finalizada</option>
+                    <option value="reprovada">Reprovada</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="requests-from">De</label>
+                <input class="form-control" id="requests-from" type="date" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" for="requests-to">Até</label>
+                <input class="form-control" id="requests-to" type="date" />
+            </div>
+            <div class="col-md-1 d-grid">
+                <button class="btn btn-outline-primary" id="requests-filter" type="button">Filtrar</button>
+            </div>
+        </div>
+        <div id="requests-counts" class="d-flex flex-wrap gap-2 mb-3" aria-label="Contagem por status"></div>
+        <div class="table-responsive border rounded bg-white">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Código</th>
+                        <th scope="col">Finalidade</th>
+                        <th scope="col">Solicitante</th>
+                        <th scope="col">Departamento</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Data</th>
+                        <th scope="col">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="requests-rows"></tbody>
+            </table>
+        </div>
+        <div id="requests-empty" class="alert alert-light border mt-3 d-none">Nenhuma solicitação encontrada para os filtros.</div>
+        <div class="d-flex align-items-center justify-content-between mt-3">
+            <button class="btn btn-sm btn-outline-secondary" id="requests-prev" type="button">Anterior</button>
+            <span class="small text-secondary" id="requests-page-label" aria-live="polite"></span>
+            <button class="btn btn-sm btn-outline-secondary" id="requests-next" type="button">Próxima</button>
+        </div>
+    </section>
+
+    <section id="request-detail-panel" class="d-none" aria-labelledby="request-detail-title">
+        <div class="d-flex flex-wrap align-items-start gap-3 mb-3">
+            <div class="me-auto">
+                <a id="requests-back" class="btn btn-sm btn-outline-secondary mb-2" href="/requests">Voltar à lista</a>
+                <p class="text-secondary small mb-1" id="request-detail-code"></p>
+                <h2 id="request-detail-title" class="h3 mb-2"></h2>
+                <span id="request-detail-status" class="badge text-bg-secondary"></span>
+            </div>
+            <div id="request-actions" class="d-flex flex-wrap gap-2"></div>
+        </div>
+        <div class="card card-body mb-3">
+            <h3 class="h6">Dados da solicitação</h3>
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Solicitante</dt><dd class="col-sm-9" id="request-requester"></dd>
+                <dt class="col-sm-3">Departamento</dt><dd class="col-sm-9" id="request-department"></dd>
+                <dt class="col-sm-3">Indústria</dt><dd class="col-sm-9" id="request-industry"></dd>
+                <dt class="col-sm-3">Destinatário</dt><dd class="col-sm-9" id="request-recipient"></dd>
+                <dt class="col-sm-3">Data necessária</dt><dd class="col-sm-9" id="request-needed-date"></dd>
+                <dt class="col-sm-3">Valor estimado</dt><dd class="col-sm-9" id="request-total-value"></dd>
+                <dt class="col-sm-3">Compra</dt><dd class="col-sm-9" id="request-needs-purchase"></dd>
+                <dt class="col-sm-3">Chamado de compra</dt><dd class="col-sm-9" id="request-purchase-ticket"></dd>
+                <dt class="col-sm-3">Observações</dt><dd class="col-sm-9" id="request-notes"></dd>
+                <dt class="col-sm-3">Motivo de cancelamento/reprovação</dt><dd class="col-sm-9" id="request-cancel-reason"></dd>
+            </dl>
+        </div>
+        <div class="card card-body mb-3">
+            <h3 class="h6">Itens</h3>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead><tr><th>Brinde</th><th>Solicitado</th><th>Aprovado</th><th>Reservado</th><th>Entregue</th></tr></thead>
+                    <tbody id="request-items"></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="request-approval-panel" class="card card-body mb-3 d-none">
+            <h3 class="h6">Decisão de aprovação</h3>
+            <div id="request-approval-items"></div>
+            <label class="form-label mt-2" for="request-justification">Justificativa</label>
+            <textarea class="form-control mb-3" id="request-justification" minlength="3" maxlength="1000" required></textarea>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-success" id="request-approve" type="button">Aprovar</button>
+                <button class="btn btn-outline-danger" id="request-reject" type="button">Reprovar</button>
+                <button class="btn btn-outline-secondary" id="request-approval-close" type="button">Fechar</button>
+            </div>
+        </div>
+        <div class="card card-body">
+            <h3 class="h6">Histórico</h3>
+            <ol id="request-history" class="list-group list-group-numbered list-group-flush"></ol>
+            <p id="request-history-empty" class="small text-secondary mb-0 d-none">Ainda não há transições registradas.</p>
+        </div>
+    </section>
+</section>
+
+@section Scripts {
+    <script src="~/js/requests.js" asp-append-version="true" defer></script>
+}

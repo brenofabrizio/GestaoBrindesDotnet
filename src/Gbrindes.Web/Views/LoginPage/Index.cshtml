@@ -1,0 +1,71 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Entrar";
+}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Acesse o sistema de Controle de Brindes — Emefarma">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2563EB">
+  <title>Entrar — Emefarma</title>
+  <link rel="icon" type="image/png" href="~/assets/img/Emefarma_Símbolo_Azul Claro.png">
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="~/lib/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="~/css/site.css">
+  <link rel="stylesheet" href="~/css/auth.css">
+  <link rel="manifest" href="~/manifest.webmanifest"></head>
+<body>
+<a class="skip-link" href="#login-title">Ir para o formulário de acesso</a>
+<div class="auth-wrap">
+  <div class="auth-bg-watermark" aria-hidden="true">
+    <img src="~/assets/img/Emefarma_Símbolo_Azul Claro.png" alt="">
+  </div>
+  <main class="auth-login-shell fade-in" aria-labelledby="login-title">
+    <div class="auth-login-card">
+      <div class="auth-login-brand">
+        <span class="auth-login-logo">
+          <img src="~/assets/img/Emefarma_Símbolo_Azul Claro.png" alt="Logo Emefarma">
+        </span>
+        <span class="auth-login-company">Emefarma</span>
+      </div>
+      <div class="auth-card-header">
+        <span class="auth-kicker">CONTROLE DE BRINDES</span>
+        <h1 id="login-title">Acesse sua conta</h1>
+        <p>Entre com seus dados corporativos para continuar.</p>
+      </div>
+      <form id="loginForm" class="auth-form" novalidate>
+        <div class="auth-field mb-3">
+          <label class="form-label" for="login-email">E-mail</label>
+          <div class="auth-input-wrap">
+            <i class="bi bi-envelope" aria-hidden="true"></i>
+            <input class="form-control" type="email" id="login-email" name="email" autocomplete="username" required autofocus placeholder="seu@email.com">
+          </div>
+          <div class="invalid-feedback" id="err-email"></div>
+        </div>
+        <div class="auth-field mb-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <label class="form-label mb-0" for="login-password">Senha</label>
+            <a href="~/esqueci-senha" class="auth-forgot">Esqueci minha senha</a>
+          </div>
+          <div class="auth-input-wrap mt-1">
+            <i class="bi bi-lock" aria-hidden="true"></i>
+            <input class="form-control" type="password" id="login-password" name="password" autocomplete="current-password" required placeholder="Digite sua senha">
+            <button class="auth-password-toggle" type="button" id="togglePwd" aria-label="Mostrar senha"><i class="bi bi-eye" id="eyeIcon"></i></button>
+          </div>
+          <div class="invalid-feedback" id="err-password"></div>
+        </div>
+        <p class="auth-error d-none" id="loginGlobalErr" role="alert"></p>
+        <button class="btn btn-primary auth-submit w-100" type="submit" id="loginBtn"><span>Entrar</span><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+      </form>
+      <p class="auth-security-note"><i class="bi bi-shield-lock" aria-hidden="true"></i> Acesso protegido e exclusivo para usuários autorizados</p>
+    </div>
+    <p class="auth-login-footer">© @DateTime.UtcNow.Year Emefarma <span aria-hidden="true">·</span> Gestão de brindes</p>
+  </main>
+</div>
+<script src="~/js/login.js"></script>
+<script src="~/js/pwa-register.js"></script>
+</body>
+</html>

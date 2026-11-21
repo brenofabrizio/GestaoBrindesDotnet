@@ -1,0 +1,118 @@
+@{
+    ViewData["Title"] = "Detalhes do brinde";
+    var itemId = (Guid)ViewData["ItemId"]!;
+}
+
+<section class="container py-4" id="item-detail-page" data-item-id="@itemId" aria-labelledby="item-detail-title">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <div>
+            <p class="text-uppercase text-secondary fw-semibold mb-2">Catálogo</p>
+            <h1 id="item-detail-title" class="h2">Detalhes do brinde</h1>
+        </div>
+        <a class="btn btn-outline-secondary" href="/items">Voltar ao catálogo</a>
+    </div>
+
+    <div class="card card-body mb-4">
+        <h2 class="h5">Acesso</h2>
+        <form id="item-login-form" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label" for="item-email">E-mail</label>
+                    <input class="form-control" id="item-email" name="email" type="email" autocomplete="username" required />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="item-password">Senha</label>
+                    <input class="form-control" id="item-password" name="password" type="password" autocomplete="current-password" required />
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary" id="item-login" type="submit">Entrar</button>
+                </div>
+            </div>
+        </form>
+        <div id="item-session" class="mt-3 d-none">
+            <span id="item-user-label"></span>
+            <button class="btn btn-sm btn-outline-secondary ms-2" id="item-logout" type="button">Sair</button>
+        </div>
+    </div>
+
+    <p id="item-message" class="small" role="status" aria-live="polite"></p>
+    <div id="item-detail-content" class="d-none">
+        <article class="card card-body mb-4" aria-labelledby="item-name">
+            <div class="row g-3 align-items-start">
+                <div class="col-auto"><img id="item-photo" class="rounded border d-none" width="120" height="120" alt="Foto do brinde" /></div>
+                <div class="col">
+                    <p id="item-code" class="font-monospace text-secondary mb-1"></p>
+                    <h2 id="item-name" class="h3"></h2>
+                    <span id="item-status" class="badge text-bg-secondary"></span>
+                    <p id="item-description" class="mt-3 mb-0"></p>
+                </div>
+            </div>
+            <dl class="row mt-4 mb-0">
+                <dt class="col-sm-3">Categoria</dt><dd class="col-sm-9" id="item-category"></dd>
+                <dt class="col-sm-3">Indústria padrão</dt><dd class="col-sm-9" id="item-industry"></dd>
+                <dt class="col-sm-3">Local padrão</dt><dd class="col-sm-9" id="item-location"></dd>
+                <dt class="col-sm-3">Fornecedor</dt><dd class="col-sm-9" id="item-supplier"></dd>
+                <dt class="col-sm-3">Estoque mínimo</dt><dd class="col-sm-9" id="item-min-stock"></dd>
+                <dt class="col-sm-3">Valor unitário</dt><dd class="col-sm-9" id="item-unit-value"></dd>
+            </dl>
+        </article>
+
+        <section id="stock-entry-section" class="card card-body mb-4 d-none" aria-labelledby="stock-entry-title">
+            <h2 id="stock-entry-title" class="h5">Registrar entrada de estoque</h2>
+            <form id="stock-entry-form" novalidate>
+                <fieldset id="stock-entry-fields">
+                    <div class="row g-3">
+                        <div class="col-sm-4 col-lg-2">
+                            <label class="form-label" for="stock-entry-quantity">Quantidade</label>
+                            <input class="form-control" id="stock-entry-quantity" name="quantity" type="number" min="1" max="1000000" step="1" required />
+                        </div>
+                        <div class="col-sm-8 col-lg-5">
+                            <label class="form-label" for="stock-entry-reason">Motivo</label>
+                            <input class="form-control" id="stock-entry-reason" name="reason" maxlength="255" />
+                        </div>
+                        <div class="col-lg-5">
+                            <label class="form-label" for="stock-entry-document">Documento de referência</label>
+                            <input class="form-control" id="stock-entry-document" name="document_ref" maxlength="255" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label" for="stock-entry-purpose">Finalidade</label>
+                            <input class="form-control" id="stock-entry-purpose" name="purpose" maxlength="255" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label" for="stock-entry-ticket">Chamado de compra</label>
+                            <input class="form-control" id="stock-entry-ticket" name="purchase_ticket_no" maxlength="50" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label" for="stock-entry-recipient">Destinatário</label>
+                            <input class="form-control" id="stock-entry-recipient" name="recipient" maxlength="150" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="stock-entry-notes">Observações</label>
+                            <textarea class="form-control" id="stock-entry-notes" name="notes" maxlength="2000" rows="2"></textarea>
+                        </div>
+                        <div class="col-12 d-flex flex-wrap align-items-center gap-3">
+                            <button class="btn btn-primary" id="stock-entry-submit" type="submit">Registrar entrada</button>
+                            <span id="stock-entry-message" class="small" role="status" aria-live="polite"></span>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </section>
+
+        <section id="item-stock-section" class="card card-body mb-4 d-none" aria-labelledby="item-stock-title">
+            <h2 id="item-stock-title" class="h5">Posições com saldo positivo</h2>
+            <p class="small text-secondary">Quantidades físicas por local; reservas e disponibilidade não são inferidas nesta tela.</p>
+            <div id="item-stock-positions"></div>
+        </section>
+
+        <section class="card card-body" aria-labelledby="item-history-title">
+            <h2 id="item-history-title" class="h5">Histórico do brinde</h2>
+            <ol id="item-history" class="list-group list-group-flush mb-3"></ol>
+            <button id="item-history-more" class="btn btn-sm btn-outline-secondary align-self-start" type="button" disabled>Carregar mais</button>
+        </section>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/item-details.js" asp-append-version="true" defer></script>
+}

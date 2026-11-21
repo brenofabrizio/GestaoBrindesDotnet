@@ -1,0 +1,122 @@
+@{
+    ViewData["Title"] = "Detalhes do evento";
+    var eventId = (Guid)ViewData["EventId"]!;
+}
+
+<section class="container py-4" id="event-detail-page" data-event-id="@eventId" aria-labelledby="event-detail-heading">
+    <a class="btn btn-sm btn-outline-secondary mb-3" href="/events">← Eventos</a>
+    <p class="text-uppercase text-secondary fw-semibold mb-2">Operação</p>
+    <h1 id="event-detail-heading" class="h2">Detalhes do evento</h1>
+    <p class="text-secondary">Consulte alocações, abra ou encerre eventos, registre retiradas e confira o saldo de devolução. Alterações e permissões continuam validadas pela API.</p>
+    <div class="card card-body mb-4">
+        <h2 class="h5">Acesso</h2>
+        <form id="event-detail-login-form" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5"><label class="form-label" for="event-detail-email">E-mail</label><input class="form-control" id="event-detail-email" type="email" autocomplete="username" required /></div>
+                <div class="col-md-5"><label class="form-label" for="event-detail-password">Senha</label><input class="form-control" id="event-detail-password" type="password" autocomplete="current-password" required /></div>
+                <div class="col-md-2 d-grid"><button class="btn btn-primary" id="event-detail-login" type="submit">Entrar</button></div>
+            </div>
+        </form>
+        <div id="event-detail-session" class="mt-3 d-none"><span id="event-detail-user-label"></span><button class="btn btn-sm btn-outline-secondary ms-2" id="event-detail-logout" type="button">Sair</button></div>
+    </div>
+    <p id="event-detail-message" class="small" role="status" aria-live="polite"></p>
+    <section id="event-detail-content" class="d-none">
+        <div class="card card-body mb-3">
+            <div class="d-flex flex-wrap align-items-start gap-2"><div><h2 class="h3" id="event-detail-name"></h2><span id="event-detail-status" class="badge text-bg-primary"></span></div></div>
+            <p id="event-detail-summary" class="text-secondary mt-2 mb-0"></p>
+            <p id="event-detail-description" class="mb-0 mt-2"></p>
+        </div>
+        <section id="event-detail-management-actions" class="card card-body d-none" aria-labelledby="event-detail-management-heading">
+            <h2 id="event-detail-management-heading" class="h5">Gestão do evento</h2>
+            <p class="small text-secondary">A abertura reserva no estoque as cotas configuradas. O encerramento libera apenas as quantidades não retiradas; isso não registra devolução física.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-primary" id="event-detail-open" type="button" disabled>Abrir evento</button>
+                <button class="btn btn-outline-primary" id="event-detail-close" type="button" disabled>Encerrar evento</button>
+            </div>
+        </section>
+        <p id="event-detail-management-capability" class="small text-secondary d-none" role="status">A abertura e o encerramento exigem events.manage; a API valida a autorização.</p>
+        <section id="event-detail-allocation-editor" class="card card-body mb-3 d-none" aria-labelledby="event-detail-allocation-heading">
+            <h2 id="event-detail-allocation-heading" class="h5">Cotas (indústria × brinde)</h2>
+            <p class="small text-secondary">Disponível somente enquanto o evento está planejado. Salvar substitui a lista inteira de cotas; remova uma linha para excluí-la.</p>
+            <p id="event-detail-allocation-message" class="small text-secondary" role="status" aria-live="polite"></p>
+            <form id="event-detail-allocation-form" novalidate>
+              <fieldset id="event-detail-allocation-controls" disabled>
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label" for="event-detail-allocation-industry-search">Buscar indústria</label>
+                        <input class="form-control" id="event-detail-allocation-industry-search" type="search" autocomplete="off" />
+                        <label class="form-label mt-2" for="event-detail-allocation-industry">Indústria</label>
+                        <select class="form-select" id="event-detail-allocation-industry" required></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="event-detail-allocation-item-search">Buscar brinde por código ou nome</label>
+                        <input class="form-control" id="event-detail-allocation-item-search" type="search" autocomplete="off" />
+                        <label class="form-label mt-2" for="event-detail-allocation-item">Brinde</label>
+                        <select class="form-select" id="event-detail-allocation-item" required></select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label" for="event-detail-allocation-quantity">Quantidade</label>
+                        <input class="form-control" id="event-detail-allocation-quantity" type="number" min="1" max="1000000" step="1" value="1" required />
+                    </div>
+                    <div class="col-md-2 d-grid">
+                        <button class="btn btn-outline-primary" id="event-detail-allocation-add" type="button">Incluir cota</button>
+                    </div>
+                </div>
+                <div id="event-detail-allocation-rows" class="mt-3"></div>
+                <button class="btn btn-primary mt-3" id="event-detail-allocation-submit" type="submit" disabled>Salvar cotas</button>
+              </fieldset>
+            </form>
+        </section>
+        <section class="card card-body mb-3" aria-labelledby="event-detail-allocations-heading">
+            <h2 id="event-detail-allocations-heading" class="h5">Alocações</h2>
+            <div id="event-detail-allocations"></div>
+        </section>
+        <form id="event-detail-return-form" class="card card-body d-none" novalidate>
+            <h2 id="event-detail-returns-heading" class="h5">Saldo pendente de devolução</h2>
+            <p class="small text-secondary">Estas quantidades representam cotas ainda não retiradas; não confirmam uma devolução física.</p>
+            <div id="event-detail-returns"></div>
+            <button class="btn btn-primary align-self-start mt-3" id="event-detail-return-submit" type="submit" disabled>Confirmar devolução ao CD</button>
+        </form>
+        <p id="event-detail-withdrawal-capability" class="small text-secondary d-none" role="status"></p>
+        <form id="event-detail-withdrawal-form" class="card card-body d-none" novalidate>
+            <h2 id="event-detail-withdrawal-heading" class="h5">Retirada para a indústria</h2>
+            <p class="small text-secondary">A retirada exige a permissão explícita events.withdraw. A API valida a cota, a autorização e o saldo reservado antes de registrar o protocolo.</p>
+            <fieldset id="event-detail-withdrawal-controls" disabled>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="event-detail-withdrawal-industry">Indústria</label>
+                        <select class="form-select" id="event-detail-withdrawal-industry" required aria-label="Indústria da retirada"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="event-detail-withdrawal-recipient">Nome de quem recebeu</label>
+                        <input class="form-control" id="event-detail-withdrawal-recipient" name="received_by_name" maxlength="150" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="event-detail-withdrawal-email">E-mail (opcional)</label>
+                        <input class="form-control" id="event-detail-withdrawal-email" name="received_by_email" type="email" maxlength="190" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="event-detail-withdrawal-document">Documento (opcional)</label>
+                        <input class="form-control" id="event-detail-withdrawal-document" name="received_by_document" maxlength="30" />
+                    </div>
+                </div>
+                <div id="event-detail-withdrawal-lines" class="mt-3"></div>
+                <div class="mt-3">
+                    <label class="form-label" for="event-detail-withdrawal-notes">Observações (opcional)</label>
+                    <textarea class="form-control" id="event-detail-withdrawal-notes" name="notes" maxlength="500" rows="2"></textarea>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label" for="event-detail-withdrawal-signature">Assinatura de quem recebeu <span aria-hidden="true">*</span></label>
+                    <p id="event-detail-withdrawal-signature-help" class="small text-secondary">Assine com mouse, caneta ou toque. A imagem será enviada somente à API.</p>
+                    <canvas id="event-detail-withdrawal-signature" class="border rounded w-100" width="1200" height="360" aria-label="Campo para assinatura de quem recebeu" aria-describedby="event-detail-withdrawal-signature-help" style="aspect-ratio: 10 / 3; touch-action: none; background: #fff;"></canvas>
+                    <button class="btn btn-sm btn-outline-secondary mt-2" id="event-detail-withdrawal-signature-clear" type="button">Limpar assinatura</button>
+                </div>
+                <button class="btn btn-primary align-self-start mt-3" id="event-detail-withdrawal-submit" type="submit" disabled>Confirmar retirada</button>
+            </fieldset>
+        </form>
+    </section>
+</section>
+
+@section Scripts {
+    <script src="~/js/event-detail.js" asp-append-version="true" defer></script>
+}

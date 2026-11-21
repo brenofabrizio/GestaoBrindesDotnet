@@ -1,0 +1,103 @@
+@{
+    ViewData["Title"] = "Transferir estoque";
+}
+
+<section class="container py-4" id="stock-transfer-page" aria-labelledby="stock-transfer-title">
+    <p class="text-uppercase text-secondary fw-semibold mb-2">Estoque</p>
+    <h1 id="stock-transfer-title" class="h2">Transferir estoque entre locais</h1>
+    <p class="text-secondary">Muda o saldo de local; não é uma retirada. A API grava os dois movimentos e valida o saldo da origem.</p>
+    <div class="alert alert-info" role="note">O saldo total permanece igual. Esta tela transfere somente para locais cadastrados; transferência vinculada a evento ainda não está disponível no endpoint atual.</div>
+
+    <div class="card card-body mb-4">
+        <h2 class="h5">Acesso</h2>
+        <form id="transfer-login-form" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label" for="transfer-email">E-mail</label>
+                    <input class="form-control" id="transfer-email" name="email" type="email" autocomplete="username" required />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="transfer-password">Senha</label>
+                    <input class="form-control" id="transfer-password" name="password" type="password" autocomplete="current-password" required />
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary" id="transfer-login" type="submit">Entrar</button>
+                </div>
+            </div>
+        </form>
+        <div id="transfer-session" class="mt-3 d-none">
+            <span id="transfer-user-label"></span>
+            <button class="btn btn-sm btn-outline-secondary ms-2" id="transfer-logout" type="button">Sair</button>
+        </div>
+    </div>
+
+    <p id="transfer-message" class="small" role="status" aria-live="polite"></p>
+    <div id="transfer-form-panel" class="card card-body d-none">
+        <form id="item-search-form" class="row g-2 align-items-end mb-3">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="item-search">Localizar brinde</label>
+                <input class="form-control" id="item-search" type="search" maxlength="100" placeholder="Código ou nome" />
+            </div>
+            <div class="col-sm-4 col-lg-3 d-grid">
+                <button class="btn btn-outline-primary" id="item-search-button" type="submit">Buscar brindes</button>
+            </div>
+        </form>
+        <form id="location-create-form" class="row g-2 align-items-end mb-3 d-none">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="transfer-new-location">Cadastrar local de destino</label>
+                <input class="form-control" id="transfer-new-location" name="name" type="text" maxlength="100" autocomplete="off" required />
+                <div class="form-text">O novo local será cadastrado como “outro” e ficará salvo para transferências futuras.</div>
+            </div>
+            <div class="col-sm-4 col-lg-3 d-grid">
+                <button class="btn btn-outline-primary" id="transfer-create-location" type="submit">Cadastrar local</button>
+            </div>
+        </form>
+        <p id="location-create-hint" class="form-text d-none">Para cadastrar um local novo, peça acesso de gerenciamento de cadastros.</p>
+        <form id="stock-transfer-form" novalidate>
+            <fieldset id="transfer-fields">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="transfer-industry">Indústria</label>
+                        <select class="form-select" id="transfer-industry" name="industry_id" required>
+                            <option value="">Selecione uma indústria</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="transfer-item">Brinde</label>
+                        <select class="form-select" id="transfer-item" name="item_id" required>
+                            <option value="">Selecione um brinde</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="transfer-quantity">Quantidade</label>
+                        <input class="form-control" id="transfer-quantity" name="quantity" type="number" min="1" max="1000000" step="1" value="1" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="transfer-from">Origem</label>
+                        <select class="form-select" id="transfer-from" name="from_location_id">
+                            <option value="">Padrão da API</option>
+                        </select>
+                        <div class="form-text">Vazio: API escolhe o CD ativo; sem CD, escolhe um local ativo.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="transfer-to">Destino</label>
+                        <select class="form-select" id="transfer-to" name="to_location_id" required>
+                            <option value="">Selecione um local</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="transfer-notes">Observações</label>
+                        <textarea class="form-control" id="transfer-notes" name="notes" rows="2" maxlength="1000"></textarea>
+                    </div>
+                </div>
+                <p class="small text-secondary mt-3 mb-0">O saldo por posição é validado pela API; a lista de brindes mostra nomes, não promete disponibilidade no local de origem. Reenvios do mesmo payload reutilizam a chave Idempotency-Key.</p>
+                <button class="btn btn-primary mt-3" id="transfer-submit" type="submit">Confirmar transferência</button>
+            </fieldset>
+        </form>
+        <div id="transfer-result" class="alert alert-success mt-3 d-none" role="status" aria-live="polite"></div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/stock-transfer.js" asp-append-version="true" defer></script>
+}

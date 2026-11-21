@@ -1,0 +1,88 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>@ViewData["Title"] - Emefarma</title>
+    <link rel="icon" type="image/png" href="~/assets/img/Emefarma_Símbolo_Azul Claro.png" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="manifest" href="~/manifest.webmanifest" />
+</head>
+<body>
+<a class="skip-link" href="#main-content">Ir para o conteúdo principal</a>
+<div class="page-loader" id="pageLoader" role="status" aria-live="polite" aria-label="Carregando" hidden>
+    <div class="page-loader-card"><span class="page-loader-spinner" aria-hidden="true"></span><span>Carregando…</span></div>
+</div>
+<div class="app-shell">
+    <aside class="sidebar d-none d-lg-flex" role="complementary" aria-label="Menu lateral">
+        <a class="sidebar-brand" href="~/dashboard" aria-label="Ir para o painel">
+            <img src="~/assets/img/Emefarma_Símbolo_Azul Claro.png" alt="Emefarma" />
+            <span>Emefarma</span>
+        </a>
+        <nav class="sidebar-nav" role="navigation" aria-label="Navegação principal">
+            <div class="nav-group">Principal</div>
+            <a class="nav-link" href="~/dashboard" data-permission="dashboard.view"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+            <div class="nav-group">Trade</div>
+            <a class="nav-link" href="~/trade/lookup"><i class="bi bi-qr-code" aria-hidden="true"></i><span>Consulta TRADE</span></a>
+            <a class="nav-link" href="~/recebimento" data-permission="stock.entry"><i class="bi bi-box-arrow-in-down" aria-hidden="true"></i><span>Recebimento no CD</span></a>
+            <a class="nav-link" href="~/stock/by-industry" data-permission="stock.view"><i class="bi bi-building" aria-hidden="true"></i><span>Estoque por indústria</span></a>
+            <a class="nav-link" href="~/stock/transfer" data-permission="stock.transfer"><i class="bi bi-arrow-left-right" aria-hidden="true"></i><span>Transferência</span></a>
+            <a class="nav-link" href="~/events" data-permission="events.view"><i class="bi bi-calendar-event" aria-hidden="true"></i><span>Eventos / Feirões</span></a>
+            <div class="nav-group">Solicitações</div>
+            <a class="nav-link" href="~/requests" data-permission="requests.view_own"><i class="bi bi-inbox" aria-hidden="true"></i><span>Solicitações internas</span></a>
+            <a class="nav-link" href="~/requests/new"><i class="bi bi-plus-square" aria-hidden="true"></i><span>Nova solicitação</span></a>
+            <a class="nav-link" href="~/operacao"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Separação e entregas</span></a>
+            <div class="nav-group">Estoque</div>
+            <a class="nav-link" href="~/items" data-permission="items.view"><i class="bi bi-gift" aria-hidden="true"></i><span>Brindes</span></a>
+            <a class="nav-link" href="~/stock" data-permission="stock.view"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Livro de movimentações</span></a>
+            <a class="nav-link" href="~/stock/exit" data-permission="stock.exit"><i class="bi bi-box-arrow-up" aria-hidden="true"></i><span>Registrar saída</span></a>
+            <a class="nav-link" href="~/stock/queue" data-permission="stock.exit_confirm"><i class="bi bi-qr-code" aria-hidden="true"></i><span>Confirmar saída</span></a>
+            <a class="nav-link" href="~/stock/adjust" data-permission="stock.adjust"><i class="bi bi-sliders" aria-hidden="true"></i><span>Ajuste / estorno</span></a>
+            <div class="nav-group">Gestão</div>
+            <a class="nav-link" href="~/reports" data-permission="reports.view"><i class="bi bi-bar-chart-line" aria-hidden="true"></i><span>Relatórios</span></a>
+            <a class="nav-link" href="~/import/items" data-permission="import.run"><i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i><span>Importar planilha</span></a>
+            <a class="nav-link" href="~/notificacoes"><i class="bi bi-bell" aria-hidden="true"></i><span>Notificações</span></a>
+            <div class="nav-group">Administração</div>
+            <a class="nav-link" href="~/users" data-permission="users.view"><i class="bi bi-people" aria-hidden="true"></i><span>Usuários</span></a>
+            <a class="nav-link" href="~/roles" data-permission="roles.manage"><i class="bi bi-shield-lock" aria-hidden="true"></i><span>Perfis e permissões</span></a>
+            <a class="nav-link" href="~/account/password"><i class="bi bi-key" aria-hidden="true"></i><span>Trocar senha</span></a>
+        </nav>
+        <div class="sidebar-footer">v1.2.0</div>
+    </aside>
+    <div class="main">
+        <header class="topbar" role="banner">
+            <button class="btn btn-outline-secondary d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-label="Abrir menu" aria-controls="mobileNav"><i class="bi bi-list" aria-hidden="true"></i></button>
+            <h1>@ViewData["Title"]</h1>
+            <div class="connection-status" id="connectionStatus" role="status" aria-live="polite"><i class="bi bi-cloud-check" aria-hidden="true"></i><span>Online</span></div>
+            <form class="d-none d-md-flex quick-search" action="~/items" method="get" role="search" aria-label="Busca rápida"><input class="form-control form-control-sm" type="search" name="q" placeholder="Buscar brinde, código…" aria-label="Buscar brinde" /></form>
+            <button class="btn btn-light btn-sm" type="button" id="refreshDataBtn" aria-label="Atualizar dados" title="Atualizar dados"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i><span class="d-none d-sm-inline"> Atualizar</span></button>
+            <a class="btn btn-light" href="~/notificacoes" aria-label="Notificações"><i class="bi bi-bell" aria-hidden="true"></i></a>
+            <div class="dropdown">
+                <button class="btn btn-light user-chip dropdown-toggle" type="button" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Conta"><i class="bi bi-person-circle" aria-hidden="true"></i><span class="d-none d-sm-inline">Minha conta</span></button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuBtn">
+                    <li><a class="dropdown-item" href="~/account/password"><i class="bi bi-key me-1" aria-hidden="true"></i>Trocar senha</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><button class="dropdown-item text-danger" type="button" id="logoutBtn"><i class="bi bi-box-arrow-left me-1" aria-hidden="true"></i>Sair</button></li>
+                </ul>
+            </div>
+        </header>
+        <div class="offcanvas offcanvas-start" id="mobileNav" tabindex="-1" aria-labelledby="mobileNavTitle">
+            <div class="offcanvas-header"><div class="offcanvas-brand"><img src="~/assets/img/Emefarma_Símbolo_Azul Claro.png" alt="" /><h5 class="offcanvas-title" id="mobileNavTitle">Emefarma</h5></div><button class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar menu"></button></div>
+            <a class="nav-link" href="~/dashboard" data-permission="dashboard.view"><i class="bi bi-speedometer2"></i> Dashboard</a><a class="nav-link" href="~/requests" data-permission="requests.view_own"><i class="bi bi-inbox"></i> Solicitações</a><a class="nav-link" href="~/items" data-permission="items.view"><i class="bi bi-gift"></i> Brindes</a><a class="nav-link" href="~/stock" data-permission="stock.view"><i class="bi bi-journal-text"></i> Estoque</a><a class="nav-link" href="~/events" data-permission="events.view"><i class="bi bi-calendar-event"></i> Eventos / Feirões</a><a class="nav-link" href="~/reports" data-permission="reports.view"><i class="bi bi-bar-chart-line"></i> Relatórios</a><a class="nav-link" href="~/notificacoes"><i class="bi bi-bell"></i> Notificações</a><a class="nav-link" href="~/users" data-permission="users.view"><i class="bi bi-people"></i> Usuários</a></nav>
+        </div>
+        <main class="page" id="main-content" tabindex="-1">
+            @RenderBody()
+        </main>
+    </div>
+</div>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/js/offline-queue.js" asp-append-version="true"></script>
+<script src="~/js/pwa-register.js"></script>
+<script src="~/js/app-shell.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

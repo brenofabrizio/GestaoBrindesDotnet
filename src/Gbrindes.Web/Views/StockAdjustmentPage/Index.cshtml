@@ -1,0 +1,86 @@
+@{
+    ViewData["Title"] = "Ajustar estoque";
+}
+
+<section class="container py-4" id="stock-adjustment-page" aria-labelledby="stock-adjustment-title">
+    <p class="text-uppercase text-secondary fw-semibold mb-2">Estoque</p>
+    <h1 id="stock-adjustment-title" class="h2">Ajustar estoque</h1>
+    <p class="text-secondary">Use ajuste por contagem para informar o saldo físico contado, ou soma/subtração para registrar uma diferença. Todo ajuste exige motivo e fica no histórico do brinde.</p>
+    <div class="alert alert-warning" role="note">A permissão <code>stock.adjust</code> é obrigatória. O servidor impede saldo negativo, abaixo do reservado e ajustes sem alteração. Confirme o brinde, modo e quantidade antes de registrar.</div>
+
+    <div class="card card-body mb-4">
+        <h2 class="h5">Acesso</h2>
+        <form id="stock-adjust-login-form" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label" for="stock-adjust-email">E-mail</label>
+                    <input class="form-control" id="stock-adjust-email" name="email" type="email" autocomplete="username" required />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="stock-adjust-password">Senha</label>
+                    <input class="form-control" id="stock-adjust-password" name="password" type="password" autocomplete="current-password" required />
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary" id="stock-adjust-login" type="submit">Entrar</button>
+                </div>
+            </div>
+        </form>
+        <div id="stock-adjust-session" class="mt-3 d-none">
+            <span id="stock-adjust-user-label"></span>
+            <button class="btn btn-sm btn-outline-secondary ms-2" id="stock-adjust-logout" type="button">Sair</button>
+        </div>
+    </div>
+
+    <p id="stock-adjust-message" class="small" role="status" aria-live="polite"></p>
+    <div id="stock-adjust-form-panel" class="card card-body d-none">
+        <form id="stock-adjust-search" class="row g-2 align-items-end mb-3">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="stock-adjust-query">Localizar brinde</label>
+                <input class="form-control" id="stock-adjust-query" type="search" maxlength="100" placeholder="Código ou nome" />
+            </div>
+            <div class="col-sm-4 col-lg-3 d-grid">
+                <button class="btn btn-outline-primary" id="stock-adjust-search-button" type="submit">Buscar brindes</button>
+            </div>
+        </form>
+        <form id="stock-adjust-form" novalidate>
+            <fieldset id="stock-adjust-fields">
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label" for="stock-adjust-item">Brinde</label>
+                        <select class="form-select" id="stock-adjust-item" name="item_id" required>
+                            <option value="">Selecione um brinde</option>
+                        </select>
+                        <div class="form-text" id="stock-adjust-item-summary">A busca usa o catálogo ativo; o saldo exibido é o saldo total, não o saldo por local.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="stock-adjust-mode">Modo</label>
+                        <select class="form-select" id="stock-adjust-mode" name="mode">
+                            <option value="set">Contagem (quantidade contada)</option>
+                            <option value="delta">Somar / subtrair</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="stock-adjust-quantity">Quantidade</label>
+                        <input class="form-control" id="stock-adjust-quantity" name="quantity" type="number" min="0" max="1000000" step="1" value="0" required />
+                        <div class="form-text" id="stock-adjust-quantity-help">Informe a contagem física total.</div>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label" for="stock-adjust-reason">Motivo</label>
+                        <input class="form-control" id="stock-adjust-reason" name="reason" minlength="3" maxlength="255" required />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="stock-adjust-notes">Observações</label>
+                        <textarea class="form-control" id="stock-adjust-notes" name="notes" rows="2" maxlength="1000"></textarea>
+                    </div>
+                </div>
+                <p class="small text-secondary mt-3 mb-0">O modo “contagem” define o saldo final; “somar/subtrair” aceita quantidade positiva ou negativa. Uma tentativa repetida com o mesmo payload reutiliza a Idempotency-Key.</p>
+                <button class="btn btn-primary mt-3" id="stock-adjust-submit" type="submit">Registrar ajuste</button>
+            </fieldset>
+        </form>
+        <div id="stock-adjust-result" class="alert alert-success mt-3 d-none" role="status" aria-live="polite"></div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/stock-adjust.js" asp-append-version="true" defer></script>
+}

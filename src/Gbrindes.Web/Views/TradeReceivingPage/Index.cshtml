@@ -1,0 +1,21 @@
+@{ ViewData["Title"] = "Recebimento no CD"; }
+<section class="container py-4" id="trade-receiving-page" aria-labelledby="trade-receiving-title">
+  <p class="text-uppercase text-secondary fw-semibold mb-2">TRADE</p>
+  <h1 id="trade-receiving-title" class="h2">Recebimento no CD</h1>
+  <p class="text-secondary">Receba somente pedidos TRADE aprovados, anexe a NF e alimente o estoque.</p>
+  <div class="card card-body mb-4">
+    <h2 class="h5">Acesso</h2>
+    <form id="trade-receiving-login" novalidate><div class="row g-3 align-items-end">
+      <div class="col-md-5"><label class="form-label" for="trade-receiving-email">E-mail</label><input class="form-control" id="trade-receiving-email" type="email" required /></div>
+      <div class="col-md-5"><label class="form-label" for="trade-receiving-password">Senha</label><input class="form-control" id="trade-receiving-password" type="password" required /></div>
+      <div class="col-md-2 d-grid"><button class="btn btn-primary" type="submit">Entrar</button></div>
+    </div></form>
+    <div id="trade-receiving-session" class="mt-3 d-none"><span id="trade-receiving-user"></span><button class="btn btn-sm btn-outline-secondary ms-2" id="trade-receiving-logout" type="button">Sair</button></div>
+  </div>
+  <p id="trade-receiving-message" class="small" role="status" aria-live="polite"></p>
+  <section id="trade-receiving-workflow" class="card card-body d-none">
+    <div class="row g-3 mb-3"><div class="col-md-8"><label class="form-label" for="trade-receiving-request">Solicitação aguardando recebimento</label><select class="form-select" id="trade-receiving-request"><option value="">Selecione</option></select></div><div class="col-md-4"><label class="form-label" for="trade-receiving-invoice-no">Nº da NF (opcional)</label><input class="form-control" id="trade-receiving-invoice-no" maxlength="60" /></div></div>
+    <div id="trade-receiving-detail" class="d-none"><p><b>Chamado:</b> <span id="trade-receiving-ticket">—</span></p><p id="trade-receiving-purpose" class="text-secondary"></p><div id="trade-receiving-items" class="mb-3"></div><div class="mb-3"><label class="form-label" for="trade-receiving-invoice">Anexar NF (PDF, JPG ou PNG)</label><input class="form-control" id="trade-receiving-invoice" type="file" accept=".pdf,image/jpeg,image/png,application/pdf" /></div><div class="mb-3"><label class="form-label" for="trade-receiving-notes">Observações</label><textarea class="form-control" id="trade-receiving-notes" rows="2"></textarea></div><button class="btn btn-primary" id="trade-receiving-submit" type="button">Confirmar chegada no CD</button></div>
+  </section>
+</section>
+@section Scripts { <script src="~/js/trade-receiving.js" asp-append-version="true"></script> }

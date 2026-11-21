@@ -1,0 +1,107 @@
+@{
+    ViewData["Title"] = "Registrar entrada de estoque";
+}
+
+<section class="container py-4" id="stock-entry-page" aria-labelledby="stock-entry-page-title">
+    <p class="text-uppercase text-secondary fw-semibold mb-2">Estoque</p>
+    <h1 id="stock-entry-page-title" class="h2">Registrar entrada</h1>
+    <p class="text-secondary">Registre o recebimento de unidades para um brinde ativo. A entrada atualiza o saldo e gera uma movimentação rastreável.</p>
+    <div class="alert alert-warning" role="note">Exige <code>stock.entry</code> e <code>items.view</code>; a indústria é opcional e só é exibida com <code>lookups.view</code>. O valor unitário e a nota anexada ficam na movimentação; o valor do cadastro do brinde não é alterado.</div>
+
+    <div class="card card-body mb-4">
+        <h2 class="h5">Acesso</h2>
+        <form id="stock-entry-page-login" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label" for="stock-entry-page-email">E-mail</label>
+                    <input class="form-control" id="stock-entry-page-email" name="email" type="email" autocomplete="username" required />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="stock-entry-page-password">Senha</label>
+                    <input class="form-control" id="stock-entry-page-password" name="password" type="password" autocomplete="current-password" required />
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary" id="stock-entry-page-login-button" type="submit">Entrar</button>
+                </div>
+            </div>
+        </form>
+        <div id="stock-entry-page-session" class="mt-3 d-none">
+            <span id="stock-entry-page-user"></span>
+            <button class="btn btn-sm btn-outline-secondary ms-2" id="stock-entry-page-logout" type="button">Sair</button>
+        </div>
+    </div>
+
+    <p id="stock-entry-page-message" class="small" role="status" aria-live="polite"></p>
+    <section id="stock-entry-page-workflow" class="card card-body d-none" aria-labelledby="stock-entry-page-form-title">
+        <h2 id="stock-entry-page-form-title" class="h5">Dados do recebimento</h2>
+        <form id="stock-entry-page-search" class="row g-2 align-items-end mb-3">
+            <div class="col-sm-8 col-lg-6">
+                <label class="form-label" for="stock-entry-page-query">Localizar brinde</label>
+                <input class="form-control" id="stock-entry-page-query" type="search" maxlength="100" placeholder="Código ou nome" />
+            </div>
+            <div class="col-sm-4 col-lg-3 d-grid">
+                <button class="btn btn-outline-primary" id="stock-entry-page-search-button" type="submit">Buscar brindes</button>
+            </div>
+        </form>
+        <form id="stock-entry-page-form" novalidate>
+            <fieldset id="stock-entry-page-fields">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label" for="stock-entry-page-item">Brinde</label>
+                        <select class="form-select" id="stock-entry-page-item" name="item_id" required>
+                            <option value="">Busque e selecione um brinde</option>
+                        </select>
+                        <p id="stock-entry-page-item-summary" class="form-text mb-0">O saldo exibido é informativo; o servidor valida e atualiza o saldo.</p>
+                    </div>
+                    <div class="col-md-6 d-none" id="stock-entry-page-industry-wrap">
+                        <label class="form-label" for="stock-entry-page-industry">Indústria (opcional)</label>
+                        <select class="form-select" id="stock-entry-page-industry" name="industry_id">
+                            <option value="">Sem indústria vinculada</option>
+                        </select>
+                        <p class="form-text">Disponível somente quando a conta também pode consultar cadastros.</p>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <label class="form-label" for="stock-entry-page-quantity">Quantidade recebida</label>
+                        <input class="form-control" id="stock-entry-page-quantity" name="quantity" type="number" min="1" max="1000000" step="1" required />
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <label class="form-label" for="stock-entry-page-unit-value">Valor unitário (opcional)</label>
+                        <input class="form-control" id="stock-entry-page-unit-value" name="unit_value" type="number" min="0" max="9999999999" step="0.01" inputmode="decimal" />
+                    </div>
+                    <div class="col-sm-6 col-lg-5">
+                        <label class="form-label" for="stock-entry-page-reason">Motivo</label>
+                        <input class="form-control" id="stock-entry-page-reason" name="reason" maxlength="255" />
+                    </div>
+                    <div class="col-sm-6 col-lg-4">
+                        <label class="form-label" for="stock-entry-page-document">NF / documento (número)</label>
+                        <input class="form-control" id="stock-entry-page-document" name="document_ref" maxlength="255" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="stock-entry-page-attachment">Anexar nota fiscal (PDF, JPG ou PNG)</label>
+                        <input class="form-control" id="stock-entry-page-attachment" name="attachment" type="file" accept="application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png" />
+                        <p class="form-text">Arquivo de até 10 MB; o conteúdo é validado e armazenado em área privada.</p>
+                    </div>
+                    <div class="col-sm-6 col-lg-4">
+                        <label class="form-label" for="stock-entry-page-purpose">Finalidade</label>
+                        <input class="form-control" id="stock-entry-page-purpose" name="purpose" maxlength="255" />
+                    </div>
+                    <div class="col-sm-6 col-lg-4">
+                        <label class="form-label" for="stock-entry-page-ticket">Chamado de compra</label>
+                        <input class="form-control" id="stock-entry-page-ticket" name="purchase_ticket_no" maxlength="50" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="stock-entry-page-notes">Observações</label>
+                        <textarea class="form-control" id="stock-entry-page-notes" name="notes" rows="2" maxlength="2000"></textarea>
+                    </div>
+                </div>
+                <p class="small text-secondary mt-3 mb-0">Reenvie sem alterar os dados para repetir com a mesma chave de idempotência após uma falha incerta.</p>
+                <button class="btn btn-primary mt-3" id="stock-entry-page-submit" type="submit">Registrar entrada</button>
+            </fieldset>
+        </form>
+        <div id="stock-entry-page-result" class="alert alert-success mt-3 d-none" role="status" aria-live="polite"></div>
+    </section>
+</section>
+
+@section Scripts {
+    <script src="~/js/stock-entry.js" asp-append-version="true" defer></script>
+}

@@ -1,0 +1,6 @@
+:root { color-scheme: light; font-family: Inter, "Segoe UI", system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+body { min-height: 100vh; margin: 0; display: grid; place-items: center; padding: 24px; box-sizing: border-box; }
+main { width: min(420px, 100%); padding: 28px; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 16px 40px rgba(15,23,42,.08); text-align: center; }
+h1 { margin: 0 0 8px; font-size: 22px; }
+p { margin: 0; color: #475569; line-height: 1.6; }
+button { margin-top: 20px; min-height: 40px; padding: 0 16px; border: 0; border-radius: 8px; background: #2563eb; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }

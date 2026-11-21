@@ -1,0 +1,75 @@
+@{
+    ViewData["Title"] = "Painel de controle";
+}
+
+<section class="container py-4" id="dashboard-page" aria-labelledby="dashboard-title">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <p class="text-uppercase text-secondary fw-semibold mb-2">Operação</p>
+            <h1 id="dashboard-title" class="h2">Painel de controle</h1>
+            <p class="text-secondary">Indicadores de estoque e solicitações conforme as permissões da sua conta.</p>
+
+            <div class="card card-body mb-4">
+                <h2 class="h5">Acesso</h2>
+                <form id="dashboard-login-form" novalidate>
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label" for="dashboard-email">E-mail</label>
+                            <input class="form-control" id="dashboard-email" name="email" type="email" autocomplete="username" required />
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label" for="dashboard-password">Senha</label>
+                            <input class="form-control" id="dashboard-password" name="password" type="password" autocomplete="current-password" required />
+                        </div>
+                        <div class="col-md-2 d-grid">
+                            <button class="btn btn-primary" id="dashboard-login" type="submit">Entrar</button>
+                        </div>
+                    </div>
+                </form>
+                <div id="dashboard-session" class="mt-3 d-none">
+                    <span id="dashboard-user-label"></span>
+                    <button class="btn btn-sm btn-outline-secondary ms-2" id="dashboard-logout" type="button">Sair</button>
+                </div>
+            </div>
+
+            <div id="dashboard-summary" class="d-none" aria-labelledby="dashboard-summary-title">
+                <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
+                    <div>
+                        <h2 id="dashboard-summary-title" class="h4 mb-1">Resumo operacional</h2>
+                        <p class="small text-secondary mb-0" id="dashboard-period-label"></p>
+                    </div>
+                    <form id="dashboard-filters" class="d-flex flex-wrap gap-2 align-items-end">
+                        <div>
+                            <label class="form-label small mb-1" for="dashboard-preset">Período</label>
+                            <select class="form-select form-select-sm" id="dashboard-preset">
+                                <option value="month">Este mês</option>
+                                <option value="7">Últimos 7 dias</option>
+                                <option value="30">Últimos 30 dias</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label small mb-1" for="dashboard-from">De</label>
+                            <input class="form-control form-control-sm" id="dashboard-from" type="date" required />
+                        </div>
+                        <div>
+                            <label class="form-label small mb-1" for="dashboard-to">Até</label>
+                            <input class="form-control form-control-sm" id="dashboard-to" type="date" required />
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary" type="submit" id="dashboard-refresh">Atualizar</button>
+                    </form>
+                </div>
+
+                <p id="dashboard-message" class="small" role="status" aria-live="polite"></p>
+                <div id="dashboard-cards" class="row g-3 mb-4" aria-live="polite"></div>
+                <section class="card card-body" aria-labelledby="dashboard-alerts-title">
+                    <h3 id="dashboard-alerts-title" class="h5">Alertas de estoque</h3>
+                    <div id="dashboard-alerts" class="table-responsive"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/dashboard.js" asp-append-version="true" defer></script>
+}

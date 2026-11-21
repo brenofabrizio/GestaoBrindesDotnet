@@ -1,0 +1,68 @@
+@{
+    var requestId = ViewData["RequestId"]?.ToString() ?? string.Empty;
+    var isEdit = ViewData["IsEdit"] is true;
+    ViewData["Title"] = isEdit ? "Editar rascunho" : "Nova solicitação";
+}
+
+<section class="container py-4" id="request-create-page" data-request-id="@requestId" data-edit="@isEdit.ToString().ToLowerInvariant()" aria-labelledby="request-create-title">
+    <div class="d-flex align-items-start gap-3 mb-4">
+        <div>
+            <a class="btn btn-sm btn-outline-secondary mb-2" id="request-create-back" href="/requests">Voltar às solicitações</a>
+            <p class="text-uppercase text-secondary fw-semibold mb-2">Operação</p>
+            <h1 id="request-create-title" class="h2">@(isEdit ? "Editar rascunho de solicitação" : "Nova solicitação interna")</h1>
+            <p class="text-secondary mb-0">@(isEdit ? "Atualize os dados enquanto a solicitação permanecer em rascunho. O estoque e as permissões são recalculados pela API." : "Informe a finalidade, o destinatário e os brindes. O estoque e a aprovação são calculados pela API.")</p>
+        </div>
+    </div>
+
+    <div class="card card-body mb-4">
+        <h2 class="h5">Acesso</h2>
+        <form id="request-create-login" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5"><label class="form-label" for="request-create-email">E-mail</label><input class="form-control" id="request-create-email" type="email" autocomplete="username" required /></div>
+                <div class="col-md-5"><label class="form-label" for="request-create-password">Senha</label><input class="form-control" id="request-create-password" type="password" autocomplete="current-password" required /></div>
+                <div class="col-md-2 d-grid"><button class="btn btn-primary" id="request-create-login-button" type="submit">Entrar</button></div>
+            </div>
+        </form>
+        <div id="request-create-session" class="mt-3 d-none"><span id="request-create-user"></span><button class="btn btn-sm btn-outline-secondary ms-2" id="request-create-logout" type="button">Sair</button></div>
+    </div>
+
+    <p id="request-create-message" class="small" role="status" aria-live="polite"></p>
+    <div id="request-create-error" class="alert alert-danger d-none" role="alert"></div>
+    <div id="request-create-capability" class="alert alert-warning d-none" role="status"></div>
+
+    <form id="request-create-form" class="card card-body d-none" novalidate>
+        <div class="row g-3">
+            <div class="col-md-6"><label class="form-label" for="request-purpose">Finalidade <span aria-hidden="true">*</span></label><input class="form-control" id="request-purpose" maxlength="255" required /></div>
+            <div class="col-md-6"><label class="form-label" for="request-recipient">Destinatário</label><input class="form-control" id="request-recipient" maxlength="150" /></div>
+            <div class="col-md-4" id="request-department-field"><label class="form-label" for="request-department">Departamento</label><select class="form-select" id="request-department"><option value="">@(isEdit ? "Nenhum departamento" : "Usar departamento do perfil")</option></select></div>
+            <div class="col-md-4" id="request-industry-field"><label class="form-label" for="request-industry">Indústria</label><select class="form-select" id="request-industry"><option value="">@(isEdit ? "Nenhuma (o vínculo do perfil prevalece)" : "Usar indústria do perfil")</option></select></div>
+            <div class="col-md-4"><label class="form-label" for="request-needed-date">Data necessária</label><input class="form-control" id="request-needed-date" type="date" /></div>
+            <div class="col-md-6"><label class="form-label" for="request-purchase-ticket">Nº chamado de compra</label><input class="form-control" id="request-purchase-ticket" maxlength="50" /></div>
+            <div class="col-12"><label class="form-label" for="request-notes">Observações</label><textarea class="form-control" id="request-notes" rows="3" maxlength="2000"></textarea></div>
+        </div>
+
+        <hr class="my-4" />
+        <h2 class="h5">Brindes</h2>
+        <label class="form-label" for="request-item-search">Buscar brinde ativo</label>
+        <input class="form-control" id="request-item-search" type="search" maxlength="100" autocomplete="off" placeholder="Código ou nome" aria-controls="request-item-options" />
+        <div id="request-item-options" class="list-group mt-2 d-none" role="listbox" aria-label="Brindes encontrados"></div>
+        <p id="request-item-search-message" class="small text-secondary mt-2" aria-live="polite"></p>
+        <div class="table-responsive mt-3">
+            <table class="table align-middle">
+                <thead><tr><th>Brinde</th><th>Disponível</th><th>Quantidade</th><th><span class="visually-hidden">Ações</span></th></tr></thead>
+                <tbody id="request-selected-items"></tbody>
+            </table>
+        </div>
+        <div id="request-items-empty" class="alert alert-light border">Inclua pelo menos um brinde para continuar.</div>
+        <p id="request-purchase-warning" class="alert alert-warning d-none mb-3">A quantidade solicitada excede o disponível em pelo menos um item. A necessidade de compra será reavaliada pela API.</p>
+        <div id="request-create-result" class="alert alert-info d-none" role="status"></div>
+        <div class="d-flex flex-wrap gap-2 mt-2">
+            <button class="btn btn-primary" id="request-create-submit" type="submit">@(isEdit ? "Salvar rascunho" : "Criar e enviar")</button>
+            <button class="btn btn-outline-primary d-none" id="request-submit-draft" type="button">Tentar enviar rascunho</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <script src="~/js/request-create.js" asp-append-version="true" defer></script>
+}

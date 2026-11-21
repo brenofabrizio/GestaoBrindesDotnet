@@ -1,0 +1,157 @@
+@{
+    ViewData["Title"] = "Diretório de usuários";
+}
+
+<section class="container py-4" id="users-page" aria-labelledby="users-title">
+    <p class="text-uppercase text-secondary fw-semibold mb-2">Administração</p>
+    <h1 id="users-title" class="h2">Diretório de usuários</h1>
+    <p class="text-secondary">A consulta exige <code>users.view</code>; o cadastro exige <code>users.manage</code>. A API valida as permissões e o perfil escolhido explicitamente.</p>
+
+    <div class="card card-body mb-4">
+        <h2 class="h5">Acesso</h2>
+        <form id="users-login-form" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label" for="users-email">E-mail</label>
+                    <input class="form-control" id="users-email" name="email" type="email" autocomplete="username" required />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="users-password">Senha</label>
+                    <input class="form-control" id="users-password" name="password" type="password" autocomplete="current-password" required />
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary" id="users-login" type="submit">Entrar</button>
+                </div>
+            </div>
+        </form>
+        <div id="users-session" class="mt-3 d-none">
+            <span id="users-user-label"></span>
+            <button class="btn btn-sm btn-outline-secondary ms-2" id="users-logout" type="button">Sair</button>
+        </div>
+    </div>
+
+    <section id="users-create-panel" class="card card-body mb-4 d-none" aria-labelledby="users-create-title">
+        <h2 id="users-create-title" class="h4">Adicionar usuário</h2>
+        <p class="text-secondary">O cadastro recebe apenas o perfil selecionado e exige troca de senha no primeiro acesso; nenhum grant é inferido.</p>
+        <form id="users-create-form" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label" for="users-create-name">Nome</label>
+                    <input class="form-control" id="users-create-name" type="text" maxlength="150" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="users-create-email">E-mail</label>
+                    <input class="form-control" id="users-create-email" type="email" maxlength="190" autocomplete="email" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="users-create-role">Perfil explícito</label>
+                    <select class="form-select" id="users-create-role" required>
+                        <option value="">Selecione um perfil</option>
+                    </select>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label" for="users-create-password">Senha inicial</label>
+                    <input class="form-control" id="users-create-password" type="password" autocomplete="new-password" required />
+                    <div class="form-text">Mínimo de 8 caracteres, letras maiúsculas/minúsculas, número e caractere especial; máximo de 72 caracteres.</div>
+                </div>
+                <div class="col-md-4 d-grid">
+                    <button class="btn btn-primary" id="users-create-button" type="submit" disabled>Criar usuário</button>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <section id="users-edit-panel" class="card card-body mb-4 d-none" aria-labelledby="users-edit-heading">
+        <h2 id="users-edit-heading" class="h4">Editar usuário</h2>
+        <p class="text-secondary">Departamento e indústria podem ser alterados explicitamente. Para trocar um perfil único, faça uma seleção explícita. A atribuição de vários perfis não pode ser reduzida por esta tela.</p>
+        <form id="users-edit-form" novalidate>
+            <input id="users-edit-id" type="hidden" />
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label" for="users-edit-name">Nome</label>
+                    <input class="form-control" id="users-edit-name" type="text" maxlength="150" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="users-edit-email">E-mail</label>
+                    <input class="form-control" id="users-edit-email" type="email" maxlength="190" autocomplete="email" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="users-edit-phone">Telefone</label>
+                    <input class="form-control" id="users-edit-phone" type="tel" maxlength="30" autocomplete="tel" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="users-edit-department">Departamento</label>
+                    <select class="form-select" id="users-edit-department"><option value="">Sem departamento</option></select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="users-edit-industry">Indústria</label>
+                    <select class="form-select" id="users-edit-industry"><option value="">Sem indústria</option></select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="users-edit-role">Alterar perfil (opcional)</label>
+                    <select class="form-select" id="users-edit-role">
+                        <option value="">Manter perfil atual</option>
+                    </select>
+                    <div class="form-text" id="users-edit-role-notice"></div>
+                </div>
+                <div class="col-md-3 d-grid">
+                    <button class="btn btn-primary" id="users-edit-button" type="submit">Salvar alterações</button>
+                </div>
+                <div class="col-md-3 d-grid">
+                    <button class="btn btn-outline-secondary" id="users-edit-cancel" type="button">Cancelar</button>
+                </div>
+            </div>
+        </form>
+        <hr />
+        <h3 class="h5">Redefinir senha de acesso</h3>
+        <p class="text-secondary">A senha temporária será enviada somente após confirmação. O usuário deverá trocá-la no próximo acesso e as sessões existentes serão invalidadas.</p>
+        <form id="users-edit-password-form" novalidate>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-8">
+                    <label class="form-label" for="users-edit-password">Senha temporária</label>
+                    <input class="form-control" id="users-edit-password" type="password" minlength="8" maxlength="72" autocomplete="new-password" required />
+                    <div class="form-text">Use ao menos 8 caracteres, com maiúscula, minúscula, número e caractere especial.</div>
+                </div>
+                <div class="col-md-4 d-grid">
+                    <button class="btn btn-outline-danger" id="users-edit-password-button" type="submit">Redefinir senha</button>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <p id="users-message" class="small" role="status" aria-live="polite"></p>
+    <section id="users-results" class="d-none" aria-labelledby="users-results-title">
+        <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
+            <h2 id="users-results-title" class="h4 mb-0">Usuários</h2>
+            <form id="users-filters" class="d-flex flex-wrap gap-2 align-items-end">
+                <div>
+                    <label class="form-label small mb-1" for="users-search">Buscar nome ou e-mail</label>
+                    <input class="form-control form-control-sm" id="users-search" type="search" autocomplete="off" />
+                </div>
+                <div>
+                    <label class="form-label small mb-1" for="users-active">Situação</label>
+                    <select class="form-select form-select-sm" id="users-active">
+                        <option value="">Ativos e inativos</option>
+                        <option value="1">Ativos</option>
+                        <option value="0">Inativos</option>
+                    </select>
+                </div>
+                <div class="form-check mb-1">
+                    <input class="form-check-input" id="users-trashed" type="checkbox" />
+                    <label class="form-check-label small" for="users-trashed">Na lixeira</label>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" id="users-refresh" type="submit">Buscar</button>
+            </form>
+        </div>
+        <div id="users-table" class="table-responsive bg-white rounded border shadow-sm mb-3"></div>
+        <div class="d-flex align-items-center justify-content-between gap-2">
+            <button class="btn btn-sm btn-outline-secondary" id="users-previous" type="button" disabled>Anterior</button>
+            <span id="users-page-label" class="small text-secondary" aria-live="polite"></span>
+            <button class="btn btn-sm btn-outline-secondary" id="users-next" type="button" disabled>Próxima</button>
+        </div>
+    </section>
+</section>
+
+@section Scripts {
+    <script src="~/js/users.js" asp-append-version="true" defer></script>
+}
