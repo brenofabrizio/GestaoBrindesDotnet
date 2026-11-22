@@ -4,37 +4,35 @@ namespace Gbrindes.Tests;
 
 public sealed class HomePageTests : IClassFixture<WebApplicationFactory<Program>>
 {
+    private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
 
     public HomePageTests(WebApplicationFactory<Program> factory)
     {
+        _factory = factory;
         _client = factory.CreateClient();
     }
 
     [Fact]
-    public async Task Home_page_presents_application_instead_of_template_scaffold()
+    public async Task Home_page_redirects_directly_to_login()
     {
-        var response = await _client.GetAsync("/");
-        var html = await response.Content.ReadAsStringAsync();
+        using var client = _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
-        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("Gestão de Brindes", html);
-        Assert.Contains("lang=\"pt-BR\"", html);
-        Assert.Contains("Verificar disponibilidade", html);
-        Assert.DoesNotContain("Welcome", html);
-        Assert.DoesNotContain("Learn about", html);
+        var response = await client.GetAsync("/");
+
+        Assert.Equal(System.Net.HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal("/login", response.Headers.Location?.OriginalString);
     }
 
     [Fact]
-    public async Task Home_page_exposes_accessible_live_service_status()
+    public async Task Login_page_remains_the_public_entrypoint()
     {
-        var response = await _client.GetAsync("/");
+        var response = await _client.GetAsync("/login");
         var html = await response.Content.ReadAsStringAsync();
 
         Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("id=\"service-status\"", html);
-        Assert.Contains("aria-live=\"polite\"", html);
-        Assert.Contains("/api/v1/readiness", html);
+        Assert.Contains("Acesse sua conta", html);
+        Assert.DoesNotContain("Verificar disponibilidade", html);
     }
 
     [Fact]
